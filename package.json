@@ -1,0 +1,31 @@
+{
+  "name": "media-helper",
+  "version": "1.0.1",
+  "description": "A small module to help detecting and converting files through URL/file sytem",
+  "main": "media-helper.js",
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/soixantecircuits/media-helper.git"
+  },
+  "keywords": [
+    "file",
+    "type",
+    "convert",
+    "image",
+    "video",
+    "media",
+    "base64"
+  ],
+  "author": "soixantecircuits",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/soixantecircuits/media-helper/issues"
+  },
+  "homepage": "https://github.com/soixantecircuits/media-helper#readme",
+  "dependencies": {
+    "fs": "0.0.1-security",
+    "mmmagic": "^0.4.5",
+    "request": "^2.79.0"
+  }
+}
