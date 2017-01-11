@@ -37,7 +37,7 @@ function isFile (path) {
 }
 
 /**
- * Determines if a file exists
+ * Determines if a media is Buffer
  * @param {string} path - Path to a file
  * @returns {boolean}
  */
@@ -145,6 +145,9 @@ function toBase64 (media) {
       fileToBase64(media)
       .then(data => resolve(data))
       .catch(error => reject(error))
+    } else if (isBuffer(media)) {
+      const base64 = media.toString('base64')
+      resolve(base64)
     } else {
       reject('Error: toBase64(): argument must be url or file')
     }
@@ -152,7 +155,17 @@ function toBase64 (media) {
 }
 
 /**
- * Reads an image from file or url and convert it to base64
+ * Returns a base64 string without the dataURI scheme ("data;mime/type;base64,")
+ * @param {media} media - dataURL string
+ * @returns {Promise}
+ */
+function trimDataURI (dataURL) {
+  const dataUIRregex = /data:[a-zA-Z]+?\/[a-zA-Z]+?;base64,/gi
+  return dataURL.replace(dataUIRregex, '')
+}
+
+/**
+ * Reads an image from file or url and convert it to Buffer
  * @param {media} media - file, url or path
  * @returns {Promise}
  */
@@ -188,5 +201,6 @@ module.exports = {
   toBuffer,
   isVideo,
   isImage,
-  getMimeType
+  getMimeType,
+  trimDataURI
 }

@@ -53,3 +53,4 @@ if (mh.isURL(url)) {
 |`toBase64`| `string` | `Promise` |Converts an image to base64. `string` can describe either a path or an url.|
 |`urlToBase64`| `url` | `Promise` |Converts an image to base64 through an URL.|
 |`fileToBase64`| `path` | `Promise` |Converts an image on your system to base64.|
+|`trimDataURI`| `dataURL` | `base64 string` |Returns a base64 string without the dataURI scheme ("data;mime/type;base64,")|
