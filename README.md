@@ -45,9 +45,11 @@ if (mh.isURL(url)) {
 |`isBase64`| `string` | `boolean` |Determines if a string is base64 encoded.|
 |`isFile`| `path` | `boolean` |Determines if a string describes a path to an existing file on your system.|
 |`isURL`| `url` | `boolean` |Determines if a string describes an HTTP URL.|
+|`isBuffer`| `Buffer` | `boolean` |Determines if an object is a `Buffer`.|
 |`getMimeType`| `path` | `Promise` |Determines the mime-type of a file on your system.|
 |`isImage`| `path` | `Promise` |Determines if a file is an image.|
 |`isVideo`| `path` | `Promise` |Determines if a file is a video.|
+|`toBuffer`| `string` | `Promise` |Converts an image to Buffer. `string` can describe either a path, base64 datas or an url.|
 |`toBase64`| `string` | `Promise` |Converts an image to base64. `string` can describe either a path or an url.|
 |`urlToBase64`| `url` | `Promise` |Converts an image to base64 through an URL.|
 |`fileToBase64`| `path` | `Promise` |Converts an image on your system to base64.|

@@ -2,9 +2,10 @@
 
 const fs = require('fs')
 const mmm = require('mmmagic')
-const request = require('request').defaults({encoding: null})
+const request = require('request').defaults({ encoding: null })
 
 const Magic = mmm.Magic
+const typechecker = new Magic(mmm.MAGIC_MIME_TYPE)
 
 /**
  * Determines if a string is base64 encoded
@@ -36,20 +37,37 @@ function isFile (path) {
 }
 
 /**
- * Determines the mime-type of a file
+ * Determines if a file exists
  * @param {string} path - Path to a file
+ * @returns {boolean}
+ */
+function isBuffer (buffer) {
+  return buffer instanceof Buffer
+}
+
+/**
+ * Determines the mime-type of a file
+ * @param {string} media - either path, URL or base64 datas.
  * @returns {Promise}
  */
-function getMimeType (path) {
+function getMimeType (media) {
   return new Promise((resolve, reject) => {
-    if (isFile(path)) {
-      new Magic(mmm.MAGIC_MIME_TYPE)
-        .detectFile(path, (err, result) => {
-          err && reject(err)
-          resolve(result)
-        })
+    if (isFile(media)) {
+      typechecker.detectFile(media, (err, result) => {
+        err && reject(err)
+        resolve(result)
+      })
+    } else if (isBuffer(media)) {
+      typechecker.detect(media, (err, result) => {
+        err && reject(err)
+        resolve(result)
+      })
+    } else if (isBase64(media)) {
+      return getMimeType(toBuffer(media))
+    } else if (isURL(media)) {
+      return getMimeType(toBuffer(media))
     } else {
-      reject('path is not a file')
+      reject('media is not a file')
     }
   })
 }
@@ -127,7 +145,35 @@ function toBase64 (media) {
       fileToBase64(media)
       .then(data => resolve(data))
       .catch(error => reject(error))
-    } else { reject('Error: toBase64(): argument must be url or file') }
+    } else {
+      reject('Error: toBase64(): argument must be url or file')
+    }
+  })
+}
+
+/**
+ * Reads an image from file or url and convert it to base64
+ * @param {media} media - file, url or path
+ * @returns {Promise}
+ */
+function toBuffer (media) {
+  return new Promise((resolve, reject) => {
+    if (isURL(media)) {
+      return toBuffer(toBase64(media))
+    } else if (isBase64(media)) {
+      try {
+        resolve(Buffer.from(media))
+      } catch (ex) {
+        reject(ex)
+      }
+    } else if (isFile(media)) {
+      fs.readFile(media, (err, data) => {
+        err && reject(err)
+        resolve(data)
+      })
+    } else {
+      reject('Error: toBuffer(): argument must be file, url or file')
+    }
   })
 }
 
@@ -135,9 +181,11 @@ module.exports = {
   isBase64,
   isURL,
   isFile,
+  isBuffer,
   fileToBase64,
   urlToBase64,
   toBase64,
+  toBuffer,
   isVideo,
   isImage,
   getMimeType
