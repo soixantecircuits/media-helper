@@ -1,3 +1,5 @@
+'use strict'
+
 const fs = require('fs')
 const mmm = require('mmmagic')
 const request = require('request').defaults({encoding: null})
@@ -10,7 +12,7 @@ const Magic = mmm.Magic
  * @returns {boolean}
  */
 function isBase64 (str) {
-  var base64Regex = /^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{4}|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)$/
+  const base64Regex = /^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{4}|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)$/
   return base64Regex.test(str)
 }
 
@@ -20,7 +22,7 @@ function isBase64 (str) {
  * @returns {boolean}
  */
 function isURL (str) {
-  var urlRegex = /^https?:\/\//i
+  const urlRegex = /^https?:\/\//i
   return urlRegex.test(str)
 }
 
@@ -40,11 +42,15 @@ function isFile (path) {
  */
 function getMimeType (path) {
   return new Promise((resolve, reject) => {
-    new Magic(mmm.MAGIC_MIME_TYPE)
-      .detectFile(path, function (err, result) {
-        if (err) { reject(err) }
-        resolve(result)
-      })
+    if (isFile(path)) {
+      new Magic(mmm.MAGIC_MIME_TYPE)
+        .detectFile(path, (err, result) => {
+          err && reject(err)
+          resolve(result)
+        })
+    } else {
+      reject('path is not a file')
+    }
   })
 }
 
@@ -56,8 +62,8 @@ function getMimeType (path) {
 function isImage (path) {
   return new Promise((resolve, reject) => {
     getMimeType(path)
-      .then(type => {
-        if (type.indexOf('image') > -1) { resolve(true) } else { reject(false) }
+      .then((type) => {
+        ;(type.indexOf('image') > -1) ? resolve(true) : resolve(false)
       })
       .catch(err => reject(err))
   })
@@ -71,8 +77,8 @@ function isImage (path) {
 function isVideo (path) {
   return new Promise((resolve, reject) => {
     getMimeType(path)
-      .then(type => {
-        if (type.indexOf('video') > -1) { resolve(true) } else { reject(false) }
+      .then((type) => {
+        ;(type.indexOf('video') > -1) ? resolve(true) : resolve(false)
       })
       .catch(err => reject(err))
   })
@@ -86,7 +92,8 @@ function isVideo (path) {
 function urlToBase64 (url) {
   return new Promise((resolve, reject) => {
     request.get(url, (err, response, body) => {
-      if (err) { reject(err) } else { resolve(body.toString('base64')) }
+      err && reject(err)
+      resolve(body.toString('base64'))
     })
   })
 }
@@ -98,10 +105,10 @@ function urlToBase64 (url) {
  */
 function fileToBase64 (path) {
   return new Promise((resolve, reject) => {
-    fs.readFile(path, {encoding: 'base64'},
-      (err, data) => {
-        if (err) { reject(err) } else { resolve(data) }
-      })
+    fs.readFile(path, { encoding: 'base64' }, (err, data) => {
+      err && reject(err)
+      resolve(data)
+    })
   })
 }
 
@@ -125,13 +132,13 @@ function toBase64 (media) {
 }
 
 module.exports = {
-  isBase64: isBase64,
-  isURL: isURL,
-  isFile: isFile,
-  fileToBase64: fileToBase64,
-  urlToBase64: urlToBase64,
-  toBase64: toBase64,
-  isVideo: isVideo,
-  isImage: isImage,
-  getMimeType: getMimeType
+  isBase64,
+  isURL,
+  isFile,
+  fileToBase64,
+  urlToBase64,
+  toBase64,
+  isVideo,
+  isImage,
+  getMimeType
 }
