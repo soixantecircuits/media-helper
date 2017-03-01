@@ -137,7 +137,9 @@ function fileToBase64 (path) {
  */
 function toBase64 (media) {
   return new Promise((resolve, reject) => {
-    if (isURL(media)) {
+    if (isBase64(media)) {
+      resolve(media)
+    } else if (isURL(media)) {
       urlToBase64(media)
       .then(data => resolve(data))
       .catch(error => reject(error))
@@ -149,7 +151,7 @@ function toBase64 (media) {
       const base64 = media.toString('base64')
       resolve(base64)
     } else {
-      reject('Error: toBase64(): argument must be url or file')
+      reject('Error: toBase64(): cannot convert media')
     }
   })
 }
