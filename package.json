@@ -20,6 +20,9 @@
     "media",
     "base64"
   ],
+  "engines": {
+    "node": ">=6.0.0"
+  },
   "author": "Soixante circuits",
   "license": "MIT",
   "bugs": {
