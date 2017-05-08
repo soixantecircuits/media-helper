@@ -8,8 +8,8 @@
     "url": "git+https://github.com/soixantecircuits/media-helper.git"
   },
   "scripts": {
-    "test": "./node_modules/mocha/bin/ava",
-    "test:watch": "./node_modules/.bin/ava --watch"
+    "test": "ava",
+    "test:watch": "ava --watch"
   },
   "keywords": [
     "file",

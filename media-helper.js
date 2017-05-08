@@ -13,8 +13,13 @@ const typechecker = new Magic(mmm.MAGIC_MIME_TYPE)
  * @returns {boolean}
  */
 function isBase64 (str) {
-  const base64Regex = /^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{4}|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)$/
-  return base64Regex.test(str)
+  if (str!=null) {
+    const base64Regex = /^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{4}|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)$/
+    return base64Regex.test(str)
+  } else {
+    return false
+  }
+  
 }
 
 /**
