@@ -2,6 +2,7 @@
 
 const fs = require('fs')
 const mmm = require('mmmagic')
+const mime = require('mime-types')
 const request = require('request').defaults({ encoding: null })
 
 const Magic = mmm.Magic
@@ -74,6 +75,15 @@ function getMimeType (media) {
       reject('media is not a file')
     }
   })
+}
+
+/**
+ * Determines the mime-type from the path or a part of the path
+ * @param {string} path - Path to a file
+ * @returns {string} or {false}
+ */
+function getMimeFromName (mediaPathName) {
+  return mime.lookup(mediaPathName)
 }
 
 /**
@@ -214,5 +224,6 @@ module.exports = {
   isVideo,
   isImage,
   getMimeType,
+  getMimeFromName,
   trimDataURI
 }
