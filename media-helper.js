@@ -178,7 +178,13 @@ function trimDataURI (dataURL) {
 function toBuffer (media) {
   return new Promise((resolve, reject) => {
     if (isURL(media)) {
-      return toBuffer(toBase64(media))
+      toBase64(media)
+      .then(data => {
+        toBuffer(data)
+        .then(data => resolve(data))
+        .catch(error => reject(error))
+      })
+      .catch(error => reject(error))
     } else if (isBase64(media)) {
       try {
         resolve(Buffer.from(media))
