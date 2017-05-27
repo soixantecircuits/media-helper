@@ -18,8 +18,7 @@ function isBase64 (str) {
     return base64Regex.test(str)
   } else {
     return false
-  }
-  
+  } 
 }
 
 /**
@@ -28,8 +27,8 @@ function isBase64 (str) {
  * @returns {boolean}
  */
 function isURL (str) {
-  const urlRegex = /^https?:\/\//i
-  return urlRegex.test(str)
+  var matcher = /^(?:\w+:)?\/\/([^\s\.]+\.\S{2}|localhost[\:?\d]*)\S*$/
+  return matcher.test(str)
 }
 
 /**
