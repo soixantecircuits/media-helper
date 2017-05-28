@@ -29,7 +29,7 @@ function isBase64 (str) {
  */
 function isURL (str) {
   var matcher = /^(?:\w+:)?\/\/([^\s\.]+\.\S{2}|localhost[\:?\d]*)\S*$/
-  return matcher.test(str)
+  return matcher.test(encodeURI(str))
 }
 
 /**
