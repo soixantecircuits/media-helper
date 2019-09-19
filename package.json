@@ -1,6 +1,6 @@
 {
   "name": "media-helper",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "A small module to help detecting and converting files through URL/file sytem",
   "main": "media-helper.js",
   "repository": {
