@@ -11,6 +11,15 @@
     "test": "ava",
     "test:watch": "ava --watch"
   },
+  "files": [
+    "media-helper.js"
+  ],
+  "dependencies": {
+    "file-type": "12.3.0",
+    "mime-types": "2.1.24",
+    "mmmagic": "0.5.3",
+    "request": "2.88.0"
+  },
   "keywords": [
     "file",
     "type",
@@ -29,12 +38,6 @@
     "url": "https://github.com/soixantecircuits/media-helper/issues"
   },
   "homepage": "https://github.com/soixantecircuits/media-helper#readme",
-  "dependencies": {
-    "file-type": "12.3.0",
-    "mime-types": "2.1.24",
-    "mmmagic": "0.5.3",
-    "request": "2.88.0"
-  },
   "devDependencies": {
     "ava": "^0.17.0"
   },
