@@ -1,9 +1,11 @@
 'use strict'
 
 const fs = require('fs')
+const Buffer = require('buffer').Buffer
 const mmm = require('mmmagic')
 const mime = require('mime-types')
 const request = require('request').defaults({ encoding: null })
+const axios = require('axios').default
 
 const Magic = mmm.Magic
 const typechecker = new Magic(mmm.MAGIC_MIME_TYPE)
@@ -13,13 +15,14 @@ const typechecker = new Magic(mmm.MAGIC_MIME_TYPE)
  * @param {string} str - The string to be tested
  * @returns {boolean}
  */
-function isBase64 (str) {
-  if (str!=null) {
-    const base64Regex = /^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{4}|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)$/
+function isBase64(str) {
+  if (str != null) {
+    const base64Regex =
+      /^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{4}|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)$/
     return base64Regex.test(str)
   } else {
     return false
-  } 
+  }
 }
 
 /**
@@ -27,7 +30,7 @@ function isBase64 (str) {
  * @param {string} str - The string to be tested
  * @returns {boolean}
  */
-function isURL (str) {
+function isURL(str) {
   var matcher = /^(?:\w+:)?\/\/([^\s\.]+\.\S{2}|localhost[\:?\d]*)\S*$/
   return matcher.test(encodeURI(str))
 }
@@ -37,7 +40,7 @@ function isURL (str) {
  * @param {string} path - Path to a file
  * @returns {boolean}
  */
-function isFile (path) {
+function isFile(path) {
   return fs.existsSync(path)
 }
 
@@ -46,7 +49,7 @@ function isFile (path) {
  * @param {string} path - Path to a file
  * @returns {boolean}
  */
-function isBuffer (buffer) {
+function isBuffer(buffer) {
   return buffer instanceof Buffer
 }
 
@@ -55,7 +58,7 @@ function isBuffer (buffer) {
  * @param {string} media - either path, URL or base64 datas.
  * @returns {Promise}
  */
-function getMimeType (media) {
+function getMimeType(media) {
   return new Promise((resolve, reject) => {
     if (isFile(media)) {
       typechecker.detectFile(media, (err, result) => {
@@ -82,7 +85,7 @@ function getMimeType (media) {
  * @param {string} path - Path to a file
  * @returns {string} or {false}
  */
-function getMimeFromName (mediaPathName) {
+function getMimeFromName(mediaPathName) {
   return mime.lookup(mediaPathName)
 }
 
@@ -91,13 +94,13 @@ function getMimeFromName (mediaPathName) {
  * @param {string} path - Path to a file
  * @returns {Promise}
  */
-function isImage (path) {
+function isImage(path) {
   return new Promise((resolve, reject) => {
     getMimeType(path)
       .then((type) => {
-        ;(type.indexOf('image') > -1) ? resolve(true) : resolve(false)
+        type.indexOf('image') > -1 ? resolve(true) : resolve(false)
       })
-      .catch(err => reject(err))
+      .catch((err) => reject(err))
   })
 }
 
@@ -106,13 +109,13 @@ function isImage (path) {
  * @param {string} path - Path to a file
  * @returns {Promise}
  */
-function isVideo (path) {
+function isVideo(path) {
   return new Promise((resolve, reject) => {
     getMimeType(path)
       .then((type) => {
-        ;(type.indexOf('video') > -1) ? resolve(true) : resolve(false)
+        type.indexOf('video') > -1 ? resolve(true) : resolve(false)
       })
-      .catch(err => reject(err))
+      .catch((err) => reject(err))
   })
 }
 
@@ -121,12 +124,26 @@ function isVideo (path) {
  * @param {string} url
  * @returns {Promise}
  */
-function urlToBase64 (url) {
-  return new Promise((resolve, reject) => {
-    request.get(url, (err, response, body) => {
-      err && reject(err)
-      resolve(body.toString('base64'))
-    })
+function urlToBase64(url) {
+  return new Promise(async (resolve, reject) => {
+    // let body = await got(url, { encoding: null })
+    axios
+      .get(url, { responseType: 'arraybuffer' })
+      .then(function (response) {
+        // handle success
+        //console.log(response)
+        resolve(Buffer.from(response.data, 'binary').toString('base64'))
+      })
+      .catch(function (error) {
+        // handle error
+        reject(error)
+      })
+    // request.get(url, (err, response, body) => {
+    //   console.log(err)
+    //   err && reject(err)
+    //   resolve(body.toString('base64'))
+    // })
+    // resolve(body.toString('base64'))
   })
 }
 
@@ -135,7 +152,7 @@ function urlToBase64 (url) {
  * @param {string} path - Path to a file
  * @returns {Promise}
  */
-function fileToBase64 (path) {
+function fileToBase64(path) {
   return new Promise((resolve, reject) => {
     fs.readFile(path, { encoding: 'base64' }, (err, data) => {
       err && reject(err)
@@ -149,18 +166,18 @@ function fileToBase64 (path) {
  * @param {string} media - url or path
  * @returns {Promise}
  */
-function toBase64 (media) {
+function toBase64(media) {
   return new Promise((resolve, reject) => {
     if (isBase64(media)) {
       resolve(media)
     } else if (isURL(media)) {
       urlToBase64(media)
-      .then(data => resolve(data))
-      .catch(error => reject(error))
+        .then((data) => resolve(data))
+        .catch((error) => reject(error))
     } else if (isFile(media)) {
       fileToBase64(media)
-      .then(data => resolve(data))
-      .catch(error => reject(error))
+        .then((data) => resolve(data))
+        .catch((error) => reject(error))
     } else if (isBuffer(media)) {
       const base64 = media.toString('base64')
       resolve(base64)
@@ -175,7 +192,7 @@ function toBase64 (media) {
  * @param {media} media - dataURL string
  * @returns {Promise}
  */
-function trimDataURI (dataURL) {
+function trimDataURI(dataURL) {
   const dataUIRregex = /data:[a-zA-Z]+?\/[a-zA-Z]+?;base64,/gi
   return dataURL.replace(dataUIRregex, '')
 }
@@ -185,16 +202,16 @@ function trimDataURI (dataURL) {
  * @param {media} media - file, url or path
  * @returns {Promise}
  */
-function toBuffer (media) {
+function toBuffer(media) {
   return new Promise((resolve, reject) => {
     if (isURL(media)) {
       toBase64(media)
-      .then(data => {
-        toBuffer(data)
-        .then(data => resolve(data))
-        .catch(error => reject(error))
-      })
-      .catch(error => reject(error))
+        .then((data) => {
+          toBuffer(data)
+            .then((data) => resolve(data))
+            .catch((error) => reject(error))
+        })
+        .catch((error) => reject(error))
     } else if (isBase64(media)) {
       try {
         resolve(Buffer.from(media))

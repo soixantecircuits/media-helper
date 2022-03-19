@@ -1,6 +1,6 @@
 {
   "name": "media-helper",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "A small module to help detecting and converting files through URL/file sytem",
   "main": "media-helper.js",
   "repository": {
@@ -15,10 +15,10 @@
     "media-helper.js"
   ],
   "dependencies": {
+    "axios": "^0.26.1",
     "file-type": "12.3.0",
-    "mime-types": "2.1.24",
-    "mmmagic": "0.5.3",
-    "request": "2.88.0"
+    "mime-types": "2.1.35",
+    "mmmagic": "0.5.3"
   },
   "keywords": [
     "file",
@@ -39,11 +39,11 @@
   },
   "homepage": "https://github.com/soixantecircuits/media-helper#readme",
   "devDependencies": {
-    "ava": "^0.17.0"
+    "ava": "^4.1.0"
   },
   "ava": {
     "files": [
-      "tests/*.js"
+      "tests/*.mjs"
     ],
     "source": [
       "media-helper.js"
