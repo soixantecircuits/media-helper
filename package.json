@@ -16,7 +16,7 @@
   ],
   "dependencies": {
     "axios": "^0.26.1",
-    "file-type": "12.3.0",
+    "file-type": "16.5.4",
     "mime-types": "2.1.35",
     "mmmagic": "0.5.3"
   },
